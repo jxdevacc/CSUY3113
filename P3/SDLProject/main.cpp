@@ -18,7 +18,7 @@
 
 #include <vector>
 
-#define PLATFORM_COUNT 25
+#define PLATFORM_COUNT 28
 
 struct GameState {
     Entity* player;
@@ -174,6 +174,13 @@ void Initialize() {
         state.platforms[i+7].textureID = platformTextureID;
         state.platforms[i+7].position = glm::vec3(5, -3.25 + i-10, 0);
     }
+
+    state.platforms[26].entityType = BAD;
+    state.platforms[26].textureID = platformTextureID;
+    state.platforms[26].position = glm::vec3(-1, 0, 0);
+    state.platforms[27].entityType = BAD;
+    state.platforms[27].textureID = platformTextureID;
+    state.platforms[27].position = glm::vec3(0, 0, 0);
 
     for (int i = 0; i < PLATFORM_COUNT; i++) {
         state.platforms[i].Update(0, NULL, 0); 
