@@ -1,0 +1,3 @@
+﻿  main.cpp
+C:\Users\bacon\OneDrive\Documents\SummerCS\P3\SDLProject\main.cpp(67,23): warning C4018: '<': signed/unsigned mismatch
+  SDLProject.vcxproj -> C:\Users\bacon\OneDrive\Documents\SummerCS\P3\SDLProject\Debug\SDLProject.exe
