@@ -5,14 +5,14 @@
 #define LEVEL2_ENEMY_COUNT 1
 unsigned int level2_data[] =
 {
- 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3,
- 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3,
- 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3,
- 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3,
- 5, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 3,
- 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 1, 1, 1,
- 1, 1, 1, 1, 1, 1, 1, 2, 0, 0, 3, 0, 0, 0,
- 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 3, 0, 0, 0
+ 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0,
+ 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0,
+ 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 0,
+ 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 7,
+ 5, 0, 0, 0, 0, 0, 0, 1, 1, 0, 0, 0, 0, 0,
+ 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 1, 1,
+ 1, 1, 1, 1, 1, 1, 1, 2, 0, 0, 0, 3, 0, 0,
+ 0, 0, 0, 0, 0, 0, 0, 5, 0, 0, 0, 3, 0, 0
 };
 
 void Level2::Initialize() {
@@ -43,18 +43,20 @@ void Level2::Initialize() {
     state.enemies[0].acceleration = glm::vec3(0, -5.0f, 0);
     state.enemies[0].isActive = true;
 
-    state.enemies[0].position = glm::vec3(5, -4.25, 0);
+    state.enemies[0].position = glm::vec3(7, -2, 0);
     state.enemies[0].aiType = WAITANDGO;
     state.enemies[0].aiState = IDLE;
 
 }
 void Level2::Update(float deltaTime) { 
 	state.player->Update(deltaTime, state.player, state.enemies, LEVEL2_ENEMY_COUNT, state.map);
+    state.enemies->Update(deltaTime, state.player, state.enemies, LEVEL2_ENEMY_COUNT, state.map);
     if (state.player->position.x >= 12) {
         state.nextScene = 3;
     }
 }
 void Level2::Render(ShaderProgram* program) {
 	state.map->Render(program);
+    state.enemies->Render(program);
 	state.player->Render(program);
 }

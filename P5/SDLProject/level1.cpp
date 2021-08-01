@@ -45,8 +45,9 @@ void Level1::Initialize() {
     state.enemies[0].isActive = true;
 
 
-    state.enemies[0].position = glm::vec3(5, -4.25, 0);
+    state.enemies[0].position = glm::vec3(7, -4.25, 0);
     state.enemies[0].aiType = WAITANDGO;
+    state.enemies[0].aiState = IDLE;
 }
 void Level1::Update(float deltaTime) { 
 	state.player->Update(deltaTime, state.player, state.enemies, LEVEL1_ENEMY_COUNT, state.map);

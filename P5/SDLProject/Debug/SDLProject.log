@@ -1,5 +1,3 @@
-﻿  Entity.cpp
-  level3.cpp
-  main.cpp
-  Generating Code...
+﻿  main.cpp
+C:\Users\bacon\OneDrive\Documents\SummerCS\P5\SDLProject\main.cpp(175,59): warning C4244: '=': conversion from 'double' to 'float', possible loss of data
   SDLProject.vcxproj -> C:\Users\bacon\OneDrive\Documents\SummerCS\P5\SDLProject\Debug\SDLProject.exe

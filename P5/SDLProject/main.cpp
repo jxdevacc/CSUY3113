@@ -5,7 +5,9 @@
 #endif
 
 #define GL_GLEXT_PROTOTYPES 1
- 
+
+#include <string>
+
 #include <SDL_mixer.h>
 #include <SDL.h>
 #include <SDL_opengl.h>
@@ -38,6 +40,7 @@ Scene* currentScene;
 Scene* sceneList[4];
 
 int lives = 3;
+float lifePosX = 0.0;
 
 void SwitchToScene(Scene* scene) {
     currentScene = scene;
@@ -104,7 +107,7 @@ void ProcessInput() {
         case SDL_KEYDOWN:
             switch (event.key.keysym.sym) {
 
-            if (currentScene->state.currScene == 0) {
+            if (currentScene->state.currScene < 1) {
                 case SDLK_RETURN:
                     currentScene->state.nextScene = 1;
             }
@@ -169,9 +172,11 @@ void Update() {
     viewMatrix = glm::mat4(1.0f);
     if (currentScene->state.player->position.x > 5) {
         viewMatrix = glm::translate(viewMatrix, glm::vec3(-currentScene->state.player->position.x, 3.75, 0));
+        lifePosX = currentScene->state.player->position.x - 4.5;
     }
     else {
         viewMatrix = glm::translate(viewMatrix, glm::vec3(-5, 3.75, 0));
+        lifePosX = 0.5;
     }
 }
 
@@ -183,15 +188,17 @@ void Render() {
     program.SetViewMatrix(viewMatrix);
     currentScene->state.map->Render(&program);
 
-    if (currentScene->state.player->state == 2) {
-        Util::DrawText(&program, fontTextureID, "Mission Accomplished!", 1.0, -0.6f, glm::vec3(5,-3,0));
-    }
-    
-
     if (currentScene->state.player->dead) {
         currentScene->state.player->dead = false;
         lives -= 1;
         SwitchToScene(sceneList[currentScene->state.currScene]);
+    }
+
+    currentScene->Render(&program);
+
+    if (currentScene->state.player->state == 2) {
+        Util::DrawText(&program, fontTextureID, "Mission Accomplished!", 1.0, -0.6f, glm::vec3(9, -3, 0));
+        currentScene->state.player->isActive = false;
     }
 
     if (lives <= 0) {
@@ -199,7 +206,7 @@ void Render() {
         currentScene->state.player->isActive = false;
     }
 
-    currentScene->Render(&program);
+    Util::DrawText(&program, fontTextureID, "Lives: " + std::to_string(lives), 0.75, -0.5f, glm::vec3(lifePosX, -0.5, 0));
 
     SDL_GL_SwapWindow(displayWindow);
 }
