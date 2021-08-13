@@ -17,20 +17,22 @@
 
 struct GameState {
 	Map* map;
-	Entity* background;
+	Entity* sword;
 	Entity* player;
 	Entity* enemies;
 	GLuint enemyTextureID;
+	GLuint bossTextureID;
 	int active;
 	int spawned;
 	int currScene;
 	int nextScene;
 	float secs;
+	float attackTimer;
 };
 class Scene {
 public:
 	GameState state;
-	virtual void Initialize() = 0;
+	virtual void Initialize(Entity* player = NULL) = 0;
 	virtual void Update(float deltaTime) = 0;
 	virtual void Render(ShaderProgram* program) = 0;
 };

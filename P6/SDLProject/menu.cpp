@@ -17,7 +17,7 @@ unsigned int menu_data[] =
 
 GLuint menuFontTextureID;
 
-void Menu::Initialize() {
+void Menu::Initialize(Entity* player) {
     state.currScene = 0;
     state.nextScene = -1;
 
@@ -42,6 +42,6 @@ void Menu::Update(float deltaTime) {
 }
 
 void Menu::Render(ShaderProgram* program) {
-    Util::DrawText(program, menuFontTextureID, "Platformer Guy", 1.0, -0.5f, glm::vec3(1.3, -3.4, 0)); 
-    Util::DrawText(program, menuFontTextureID, "press enter to begin", 1.0, -0.6f, glm::vec3(1, -4.4, 0));
+    Util::DrawText(program, menuFontTextureID, "Dungeon Upgrade", 1.0, -0.5f, glm::vec3(-4, 1, 0)); 
+    Util::DrawText(program, menuFontTextureID, "press enter to begin", 1.0, -0.6f, glm::vec3(-4, -1, 0));
 }

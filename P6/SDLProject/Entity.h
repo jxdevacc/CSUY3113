@@ -26,8 +26,18 @@ public:
     AIState aiState;
 
     bool dead = false;
+    bool invincible = false;
+    float invincibleTimer = 0;
+    bool isAttacking = false;
+    float attackCooldown = 0;
+    float attackDuration = 0;
+    float attackSpeed = 0;
     int state = 0; //0 = nothing 1 = win 2 = lose
     int kills = 0;
+    int money = 0;
+    int health = 0;
+    int maxHealth = 100;
+    int damage = 0;
 
     glm::vec3 position;
     glm::vec3 movement;

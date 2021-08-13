@@ -31,7 +31,9 @@ SDL_Window* displayWindow;
 bool gameIsRunning = true;
 
 Mix_Music* music;
-Mix_Chunk* bounce;
+Mix_Chunk* click;
+Mix_Chunk* death;
+Mix_Chunk* slash;
 
 ShaderProgram program;
 glm::mat4 viewMatrix, modelMatrix, projectionMatrix;
@@ -39,13 +41,13 @@ glm::mat4 viewMatrix, modelMatrix, projectionMatrix;
 Scene* currentScene;
 Scene* sceneList[3];
 
-int lives = 3;
+int money = 0;
 float lifePosX = 0.0;
 float lifePosY = 0.0;
 
-void SwitchToScene(Scene* scene) {
+void SwitchToScene(Scene* scene, Entity* player = NULL) {
     currentScene = scene;
-    currentScene->Initialize();
+    currentScene->Initialize(player);
 }
 
 
@@ -66,6 +68,10 @@ void Initialize() {
     Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 4096);
     music = Mix_LoadMUS("calm.mp3");
     Mix_PlayMusic(music, -1);
+
+    click = Mix_LoadWAV("click.wav");
+    slash = Mix_LoadWAV("slash.wav");
+    death = Mix_LoadWAV("death.wav");
 
     viewMatrix = glm::mat4(1.0f);
     modelMatrix = glm::mat4(1.0f);
@@ -105,23 +111,61 @@ void ProcessInput() {
         case SDL_KEYDOWN:
             switch (event.key.keysym.sym) {
 
-            if (currentScene->state.currScene < 1) {
-                case SDLK_RETURN:
+            case SDLK_RETURN:
+                if (currentScene->state.currScene < 1) {
                     currentScene->state.nextScene = 1;
-            }
-            else {
-                case SDLK_LEFT:
-                    // Move the player left
-                    break;
-
-                case SDLK_RIGHT:
-                    // Move the player right
-                    break;
-
-                case SDLK_SPACE:
-
-                    break;
+                    Mix_PlayChannel(-1, click, 0);
                 }
+                break;
+
+            case SDLK_1:
+                if (currentScene->state.player->money > 10 && currentScene->state.currScene == 2) {
+                    currentScene->state.player->money -= 10;
+                    currentScene->state.player->damage += 10;
+                    Mix_PlayChannel(-1, click, 0);
+                }
+                break;
+
+            case SDLK_2:
+                if (currentScene->state.player->money > 10 && currentScene->state.currScene == 2) {
+                    currentScene->state.player->money -= 10;
+                    currentScene->state.player->attackDuration += 1;
+                    Mix_PlayChannel(-1, click, 0);
+                }
+                break;
+
+            case SDLK_3:
+                if (currentScene->state.player->money > 10 && currentScene->state.currScene == 2) {
+                    currentScene->state.player->money -= 10;
+                    currentScene->state.player->maxHealth += 100;
+                    Mix_PlayChannel(-1, click, 0);
+                }
+                break;
+
+            case SDLK_4:
+                if (currentScene->state.player->money > 10 && currentScene->state.currScene == 2) {
+                    currentScene->state.player->money -= 10;
+                    currentScene->state.player->attackSpeed += 1;
+                    Mix_PlayChannel(-1, click, 0);
+                }
+                break;
+
+            case SDLK_5:
+                if (currentScene->state.currScene == 2) {
+                    Mix_PlayChannel(-1, click, 0);
+                    currentScene->state.nextScene = 1;
+                }
+                break;
+
+
+            case SDLK_SPACE:
+                if (currentScene->state.player->attackCooldown == 0 && currentScene->state.currScene == 1) {
+                    currentScene->state.player->isAttacking = true;
+                    Mix_PlayChannel(-1, slash, 0);
+                }
+
+                break;
+                
 
             }
 
@@ -135,10 +179,13 @@ void ProcessInput() {
     if (keys[SDL_SCANCODE_LEFT]) {
         currentScene->state.player->movement.x = -3.0f;
         currentScene->state.player->animIndices = currentScene->state.player->animLeft;
+        currentScene->state.sword->animIndices = currentScene->state.sword->animLeft;
     }
     else if (keys[SDL_SCANCODE_RIGHT]) {
         currentScene->state.player->movement.x = 3.0f;
         currentScene->state.player->animIndices = currentScene->state.player->animRight;
+        currentScene->state.sword->animIndices = currentScene->state.sword->animRight;
+
     }
     if (keys[SDL_SCANCODE_UP]) {
         currentScene->state.player->movement.y = 3.0f;
@@ -186,25 +233,30 @@ void Render() {
     program.SetViewMatrix(viewMatrix);
     currentScene->state.map->Render(&program);
 
-    if (currentScene->state.player->dead) {
-        currentScene->state.player->dead = false;
-        lives -= 1;
-        SwitchToScene(sceneList[currentScene->state.currScene]);
+    if (currentScene->state.currScene == 1) {
+        std::string health = std::to_string(currentScene->state.player->health);
+        Util::DrawText(&program, fontTextureID, health, 1.0, -0.6f, glm::vec3(currentScene->state.player->position.x - (1 - (1.0/health.length())), currentScene->state.player->position.y + 1, 0));
+
+        for (int i = 0; i < currentScene->state.spawned; i++) {
+            if (currentScene->state.enemies[i].isActive) {
+                health = std::to_string(currentScene->state.enemies[i].health);
+                Util::DrawText(&program, fontTextureID, health, 1.0, -0.6f, glm::vec3(currentScene->state.enemies[i].position.x - (1 - (1.0/health.length())), currentScene->state.enemies[i].position.y + 1, 0));
+            }
+        }
     }
 
     currentScene->Render(&program);
 
     if (currentScene->state.player->state == 2) {
-        Util::DrawText(&program, fontTextureID, "Mission Accomplished!", 1.0, -0.6f, glm::vec3(9, -3, 0));
+        Util::DrawText(&program, fontTextureID, "You win!", 1.0, -0.6f, glm::vec3(currentScene->state.player->position.x - 2, currentScene->state.player->position.y, 0));
         currentScene->state.player->isActive = false;
     }
 
-    if (lives <= 0) {
-        Util::DrawText(&program, fontTextureID, "Mission Failed!", 1.0, -0.6f, glm::vec3(2, -3, 0));
-        currentScene->state.player->isActive = false;
+    if (currentScene->state.currScene == 1) {
+        Util::DrawText(&program, fontTextureID, "Kills: " + std::to_string(currentScene->state.player->kills), 0.75, -0.5f, glm::vec3(lifePosX, lifePosY, 0));
+        Util::DrawText(&program, fontTextureID, "Damage: " + std::to_string(currentScene->state.player->damage), 0.75, -0.5f, glm::vec3(lifePosX, lifePosY - .75, 0));
+        Util::DrawText(&program, fontTextureID, "Cooldown: " + std::to_string(currentScene->state.player->attackCooldown), 0.75, -0.5f, glm::vec3(lifePosX, lifePosY - 1.5, 0));
     }
-
-    Util::DrawText(&program, fontTextureID, "Lives: " + std::to_string(currentScene->state.secs) + std::to_string(currentScene->state.active) + std::to_string(currentScene->state.spawned), 0.75, -0.5f, glm::vec3(lifePosX, lifePosY, 0));
 
     SDL_GL_SwapWindow(displayWindow);
 }
@@ -221,7 +273,7 @@ int main(int argc, char* argv[]) {
         ProcessInput();
         Update();
 
-        if (currentScene->state.nextScene >= 0) SwitchToScene(sceneList[currentScene->state.nextScene]);
+        if (currentScene->state.nextScene >= 0) SwitchToScene(sceneList[currentScene->state.nextScene], currentScene->state.player);
 
         Render();
 
