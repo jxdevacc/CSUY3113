@@ -1,9 +1,12 @@
 #include "Level1.h"
 #define LEVEL1_WIDTH 50
 #define LEVEL1_HEIGHT 50
-#define LEVEL1_ENEMY_COUNT 100
+#define LEVEL1_ENEMY_COUNT 50
 
 unsigned int level1_data[2500] = { 0 };
+
+
+GLuint level1FontTextureID;
 
 void Level1::createEnemy(int enemyID) {
     std::random_device rd;
@@ -11,13 +14,15 @@ void Level1::createEnemy(int enemyID) {
     std::uniform_real_distribution<float> distr(-1, 1);
     int where = (int)(4.0 * distr(eng));
 
+    level1FontTextureID = Util::LoadTexture("font1.png");
+
     state.currScene = 1;
 
     state.enemies[state.spawned].entityType = ENEMY;
-    if (enemyID < 100) {
+    if (enemyID < 49) {
         state.enemies[state.spawned].textureID = state.enemyTextureID;
     }
-    else {
+    else{
         state.enemies[state.spawned].textureID = state.bossTextureID;
     }
     state.enemies[state.spawned].speed = 1 + enemyID*.01;
@@ -124,7 +129,10 @@ void Level1::Update(float deltaTime) {
 
     if (state.secs > 1) {
         state.secs = 0;
-        createEnemy(state.spawned);
+        if (state.spawned < 50) {
+            createEnemy(state.spawned);
+        }
+
     }
     if (state.player->attackCooldown > 0) {
         state.sword->isActive = false;
@@ -164,7 +172,7 @@ void Level1::Update(float deltaTime) {
         state.nextScene = 2;
     }
 
-    if (state.player->kills >= 100) {
+    if (state.player->kills >= 50) {
         state.player->state = 2;
     }
 
@@ -176,4 +184,5 @@ void Level1::Render(ShaderProgram* program) {
     }
     state.sword->Render(program);
 	state.player->Render(program);
+    Util::DrawText(program, level1FontTextureID, "Spacebar to attack, Arrow Keys to move", 0.5, -0.3f, glm::vec3(state.player->position.x-4, state.player->position.y-3.5, 0));
 }

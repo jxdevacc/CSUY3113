@@ -27,14 +27,24 @@ void Menu::Initialize(Entity* player) {
     state.map = new Map(MENU_WIDTH, MENU_HEIGHT, menu_data, mapTextureID, 1.0f, 3, 3);
     state.player = new Entity();
     state.player->entityType = PLAYER;
-    state.player->position = glm::vec3(0, 0, 0);
+    state.player->position = glm::vec3(0);
     state.player->movement = glm::vec3(0);
-    state.player->acceleration = glm::vec3(0, -5.0f, 0);
     state.player->speed = 1.0f;
-    state.player->textureID = Util::LoadTexture("player.png");
-    state.player->entityType = PLAYER;
+    state.player->width = 0.8f;
+    state.player->height = 0.9f;
+    state.player->health = state.player->maxHealth;
+    state.player->damage = 20;
 
-    state.player->jumpPower = 5.0f;
+    state.player->textureID = Util::LoadTexture("playerSheet.png");
+    state.player->animCols = 5;
+    state.player->animRows = 2;
+    state.player->animRight = new int[8]{ 0,1,2,3,4 };
+    state.player->animLeft = new int[8]{ 5,6,7,8,9 };
+    state.player->animIndices = state.player->animRight;
+    state.player->animFrames = 5;
+    state.player->animIndex = 0;
+    state.player->animTime = 0;
+    state.player->attackDuration = 1;
 }
 
 void Menu::Update(float deltaTime) {

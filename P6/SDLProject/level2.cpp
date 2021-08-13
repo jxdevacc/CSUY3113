@@ -57,7 +57,7 @@ void Level2::Render(ShaderProgram* program) {
     Util::DrawText(program, level2FontTextureID, "press 2 to increase attack duration by 1 [$10]", 0.5, -0.3f, glm::vec3(-4.5, 1, 0));
     Util::DrawText(program, level2FontTextureID, "press 3 to increase Health by 100 [$10]", 0.5, -0.3f, glm::vec3(-4.5, 0, 0));
     if (state.player->attackSpeed < 3) {
-        Util::DrawText(program, level2FontTextureID, "press 4 to increase damage by 10 [$10]", 0.5, -0.3f, glm::vec3(-4.5, -1, 0));
+        Util::DrawText(program, level2FontTextureID, "press 4 to reduce attack cooldown by 1 [$10]", 0.5, -0.3f, glm::vec3(-4.5, -1, 0));
     }
     Util::DrawText(program, level2FontTextureID, "press 5 to re enter the dungeon", 0.5, -0.3f, glm::vec3(-4.5, -2, 0));
 }

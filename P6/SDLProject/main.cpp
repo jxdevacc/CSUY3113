@@ -100,6 +100,7 @@ void ProcessInput() {
 
     currentScene->state.player->movement = glm::vec3(0);
 
+
     SDL_Event event;
     while (SDL_PollEvent(&event)) {
         switch (event.type) {
@@ -119,7 +120,7 @@ void ProcessInput() {
                 break;
 
             case SDLK_1:
-                if (currentScene->state.player->money > 10 && currentScene->state.currScene == 2) {
+                if (currentScene->state.player->money >= 10 && currentScene->state.currScene == 2) {
                     currentScene->state.player->money -= 10;
                     currentScene->state.player->damage += 10;
                     Mix_PlayChannel(-1, click, 0);
@@ -127,7 +128,7 @@ void ProcessInput() {
                 break;
 
             case SDLK_2:
-                if (currentScene->state.player->money > 10 && currentScene->state.currScene == 2) {
+                if (currentScene->state.player->money >= 10 && currentScene->state.currScene == 2) {
                     currentScene->state.player->money -= 10;
                     currentScene->state.player->attackDuration += 1;
                     Mix_PlayChannel(-1, click, 0);
@@ -135,7 +136,7 @@ void ProcessInput() {
                 break;
 
             case SDLK_3:
-                if (currentScene->state.player->money > 10 && currentScene->state.currScene == 2) {
+                if (currentScene->state.player->money >= 10 && currentScene->state.currScene == 2) {
                     currentScene->state.player->money -= 10;
                     currentScene->state.player->maxHealth += 100;
                     Mix_PlayChannel(-1, click, 0);
@@ -143,7 +144,7 @@ void ProcessInput() {
                 break;
 
             case SDLK_4:
-                if (currentScene->state.player->money > 10 && currentScene->state.currScene == 2) {
+                if (currentScene->state.player->money >= 10 && currentScene->state.currScene == 2) {
                     currentScene->state.player->money -= 10;
                     currentScene->state.player->attackSpeed += 1;
                     Mix_PlayChannel(-1, click, 0);
@@ -235,7 +236,9 @@ void Render() {
 
     if (currentScene->state.currScene == 1) {
         std::string health = std::to_string(currentScene->state.player->health);
-        Util::DrawText(&program, fontTextureID, health, 1.0, -0.6f, glm::vec3(currentScene->state.player->position.x - (1 - (1.0/health.length())), currentScene->state.player->position.y + 1, 0));
+        if (currentScene->state.player->isActive) {
+            Util::DrawText(&program, fontTextureID, health, 1.0, -0.6f, glm::vec3(currentScene->state.player->position.x - (1 - (1.0 / health.length())), currentScene->state.player->position.y + 1, 0));
+        }
 
         for (int i = 0; i < currentScene->state.spawned; i++) {
             if (currentScene->state.enemies[i].isActive) {
@@ -274,6 +277,9 @@ int main(int argc, char* argv[]) {
         Update();
 
         if (currentScene->state.nextScene >= 0) SwitchToScene(sceneList[currentScene->state.nextScene], currentScene->state.player);
+
+        //if (currentScene->state.nextScene == 0) SwitchToScene(sceneList[currentScene->state.nextScene]);
+        //else SwitchToScene(sceneList[currentScene->state.nextScene], currentScene->state.player);
 
         Render();
 
